@@ -9,7 +9,6 @@ verify_ssl = true
 flask = "*"
 jinja2 = "*"
 basilica = "*"
-tweepy = "*"
 redis = "*"
 psycopg2 = "*"
 flask-sqlalchemy = "*"
