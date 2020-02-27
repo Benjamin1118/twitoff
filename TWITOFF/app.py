@@ -1,7 +1,7 @@
 """ code for our app"""
 
 from decouple import config
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from .models import DB, User
 
 from .twitter import add_or_update_user
@@ -27,22 +27,25 @@ def create_app():
     @app.route('/')
     def root():
         users = User.query.all()
+        print(users)
         return render_template('base.html', title = 'Home', users = users)
     
     @app.route('/reset')
     def reset():
         DB.drop_all()
         DB.create_all()
-        return render_template('base.html', title = 'Reset', users=[])
+        DB.session.commit()
+        #return render_template('base.html', title = 'Reset', users=[])
+        return redirect(url_for('root'))
 
     @app.route('/user', methods = ['POST'])
     @app.route('/user/<name>', methods= ['GET'])
-    def user(name=None, message = ' '):
+    def user(name=None, message = ''):
         name = name or request.values['user_name']
         try:
             if request.method == 'POST':
                 add_or_update_user(name)
-                message = "User {} succesfully added".format(name)
+                message = "User {} successfully added".format(name)
             tweets = User.query.filter(User.name == name).one().tweets
         except Exception as e:
             message = "Error adding {}: {}".format(name,e)
@@ -59,8 +62,8 @@ def create_app():
         else:
             prediction = predict_user(user1, user2, request.values['tweet_text'])
             message = '"{}" is more likely to be said by {} than {}'.format(
-                request.values['tweet_text'], user1 if prediction else user2,
-                user2 if prediction else user1
+            request.values['tweet_text'], user1 if prediction else user2,
+            user2 if prediction else user1
             )
         return render_template('prediction.html', title='prediction', message=message)
     return app

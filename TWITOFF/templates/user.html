@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h2> User: {{ title }} </h2>
+<h2> User: {{ title }}</h2>
 
 <p>{{ message }}</p>
 
 <ul>
-    {% for tweets in tweets %}
+    {% for tweet in tweets %}
     <li> {{ tweet.id }} - {{ tweet.text}}</li>
     {% endfor %}
 </ul>
